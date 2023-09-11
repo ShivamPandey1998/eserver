@@ -14,9 +14,9 @@ const authenticate = require('../middleware/authenticate');
 // });
 router.post('/signup', async (req,res) =>{
 
-    const{ name, email, phone, password, cpassword } = req.body
+    const{ UserName,fullname, email, phone, password, cpassword ,age, gender } = req.body
 
-if(!name || !email || !phone || !password || !cpassword ){
+if(!UserName || !fullname || !email || !phone || !password || !cpassword || !age || !gender ){
     return res.status(422).json({Error: "please fieled the error"});
 }
 try{
@@ -30,12 +30,21 @@ try{
     return res.status(422).json({ Error:"password not match"});
 
 }
-const user = new User({ name, email, phone, password, cpassword  });
+const user = new User({ UserName, fullname, email, phone, password, cpassword, age, gender   });
 
     
        const useRegister =await user.save();
        if(useRegister) {
-        res.status(201).json({message:"user register successful"});
+        res.status(201).json({message:"user register successful" 
+        ,data: {
+            user_id: newUser._id,
+            username,
+            email,
+            full_name,
+            age,
+            gender
+          }
+    });
        }else{
            res.status(422).json({message:"user not register"});
        }
@@ -45,7 +54,7 @@ const user = new User({ name, email, phone, password, cpassword  });
 
 }
 console.log(req.body);
-console.log(name);
+console.log(fullname);
 
 })
     router.post('/signin',async (req,res) =>{
@@ -97,9 +106,9 @@ console.log(name);
         router.post('/contect', authenticate, async (req, res) => {
             try {
         
-                const { name,email,phone,message } = req.body;
+                const { fullname,email,phone,message } = req.body;
                 
-                if (!name || !email || !phone || !message) {
+                if (!fullname || !email || !phone || !message) {
                     console.log(Error)
                     console.log("error in contact fieled form");
                     return res.json({ error: "plzz filled the contact form" });
@@ -107,7 +116,7 @@ console.log(name);
                 const userContact = await User.findOne({ _id: req.userID });
                 if (userContact) {
                     
-                    const userMessage = await userContact.addMessage(name,email,phone,message);
+                    const userMessage = await userContact.addMessage(fullname,email,phone,message);
         
                     await userContact.save();
         
